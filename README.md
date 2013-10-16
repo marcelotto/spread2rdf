@@ -1,16 +1,34 @@
-# Excel2RDF
+# Spread2RDF
 
-Excel2RDF is ...
+Spread2RDF is a converter for complex spreadsheets to RDF and a DSL for
+specifying the mapping rules for this conversion.
 
+## Features
+
+* Supports Excel/Excelx, Google spreadsheets, OpenOffice, LibreOffice and CSV
+  spreadsheets as input, thanks to [Roo](https://github.com/Empact/roo)).
+  (Currently, it's tested for Excel only.
+  If you have a problem with another spreadsheet type,
+  [raise an issue](https://github.com/marcelotto/spread2rdf/issues).)
+* Supports many RDF serialization formats for the output, thanks to
+  [RDF.rb](https://github.com/ruby-rdf/rdf)).
 
 ## Installation
 
-In a terminal install the gem by running
+Install [Ruby](http://www.ruby-lang.org/) and execute the following command
+in a terminal:
 
-    $ gem install excel2rdf
+    $ gem install spread2rdf
 
-## Introduction
+## Command-line interface
 
+For a description of all available parameters, type the following in a terminal:
+
+    $ spread2rdf --help
+
+## Mapping DSL
+
+Description is following soon.
 
 ## Contributing
 

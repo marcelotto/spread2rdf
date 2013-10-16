@@ -1,0 +1,3 @@
+#!/usr/bin/env ruby
+require 'spread2rdf'
+Spread2RDF::Cli.new.run

@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in excel2rdf.gemspec
+# Specify your gem's dependencies in spread2rdf.gemspec
 gemspec
 
 =begin

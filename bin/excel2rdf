@@ -1,3 +1,0 @@
-#!/usr/bin/env ruby
-require 'excel2rdf'
-Excel2RDF::Cli.new
