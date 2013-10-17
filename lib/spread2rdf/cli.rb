@@ -18,6 +18,12 @@ module Spread2RDF
       @table.read(@input_file)
       write_output
       self
+    rescue => e
+      if Spread2RDF.debug_mode
+        raise e
+      else
+        abort e.to_s
+      end
     end
 
   private
@@ -49,6 +55,10 @@ module Spread2RDF
         @options[:schema_spec_file] = nil
         opts.on( '-s', '--schema SPEC_FILE', 'Schema specification file (required)' ) do |file|
           @options[:schema_spec_file] = file
+        end
+
+        opts.on( '-d', '--debug', 'Run in debug mode' ) do
+          Spread2RDF.debug_mode = true
         end
 
       end

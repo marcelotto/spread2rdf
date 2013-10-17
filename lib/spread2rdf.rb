@@ -19,5 +19,8 @@ require 'spread2rdf/spreadsheet'
 require 'spread2rdf/cli'
 
 module Spread2RDF
+  class << self
+    attr_accessor :debug_mode
+  end
 end
 
