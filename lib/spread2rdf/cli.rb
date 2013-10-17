@@ -39,6 +39,11 @@ module Spread2RDF
           exit
         end
 
+        opts.on( '-v', '--version', 'Print version information' ) do
+          puts "Spread2RDF #{VERSION}"
+          exit
+        end
+
         @options[:output_dir] = '.'
         opts.on( '-o', '--output DIR', 'Output directory (default: current directory)' ) do |dir|
           abort "Output directory #{dir} doesn't exist" unless Dir.exist?(dir)
