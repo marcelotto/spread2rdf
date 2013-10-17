@@ -21,12 +21,12 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version = '>= 1.9.3'
 
   gem.add_dependency('activesupport', '~> 3.2.3')
-  gem.add_dependency('awesome_print')
+  gem.add_dependency('awesome_print', '~> 1.1.0')
 
   gem.add_dependency('roo', '~> 1.12.2')
   gem.add_dependency('rubyzip', '~> 1.0.0') # for the roo-xlsm-fix
 
-  gem.add_dependency('linkeddata')
+  gem.add_dependency('linkeddata', '~> 1.0.0')
 
   gem.add_development_dependency('rake')
   gem.add_development_dependency('pry', '~> 0.9.12.2')
