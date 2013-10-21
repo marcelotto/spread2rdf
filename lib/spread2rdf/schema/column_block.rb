@@ -1,6 +1,7 @@
 module Spread2RDF
-  class Spreadsheet
-    class SubSheet < Sheet
+  module Schema
+    class ColumnBlock < Sheet
+      include StatementMapping
 
       self.attributes = {
           predicate:  nil,

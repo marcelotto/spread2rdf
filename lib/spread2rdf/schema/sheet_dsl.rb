@@ -1,29 +1,30 @@
 module Spread2RDF
-  class Spreadsheet
+  module Schema
     class Sheet
       class DSL
-        def initialize(sheet, &block)
-          @sheet = sheet
+        def initialize(worksheet, filename, &block)
+          @worksheet = worksheet
+          @filename = filename
           instance_exec(&block) if block_given?
         end
 
         def column(name, options={}, &block)
           name = name.to_sym
-          column = @sheet.column[name] ||= Column.new(@sheet, &block)
+          column = @worksheet.column[name] ||= Column.new(@worksheet, &block)
           column.update_attributes options.merge(name: name)
           column # TODO: chaining logic ...?
         end
 
         def sub_sheet(name, options={}, &block)
           name = name.to_sym
-          sub_sheet = @sheet.column[name] ||= SubSheet.new(@sheet)
+          sub_sheet = @worksheet.column[name] ||= ColumnBlock.new(@worksheet)
           sub_sheet.update_attributes options.merge(name: name)
-          Sheet::DSL.new(sub_sheet, &block)
+          DSL.new(sub_sheet, @filename, &block)
         end
         alias column_block sub_sheet
 
         def cell(coord, options = {}, &block)
-          content = @sheet.cell(coord)
+          content = ROO.cell(coord, @worksheet.source_name)
           content = block.call(content) if block_given?
           content
         end

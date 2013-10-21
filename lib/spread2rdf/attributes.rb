@@ -6,6 +6,7 @@ module Spread2RDF
       def attributes
         if superclass.respond_to?(:attributes) and
             (super_attributes = superclass.attributes).is_a? Hash
+          @attributes ||= {}
           @attributes.reverse_merge(super_attributes)
         else
           @attributes

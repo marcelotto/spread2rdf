@@ -12,10 +12,9 @@ module Spread2RDF
       abort "Couldn't find schema specification file #{schema_spec_file}" unless
           File.exist?(schema_spec_file)
       load schema_spec_file
-      abort "No schema specification found" if Spreadsheet.definitions.empty?
+      abort "No schema specification found" if Schema.definitions.empty?
       puts "Reading #{@input_file} ..."
-      @table = Spreadsheet.definitions.first
-      @table.read(@input_file)
+      @mapping = Schema.definitions.first.map(@input_file)
       write_output
       self
     rescue => e
@@ -87,8 +86,8 @@ module Spread2RDF
 
     def write_output
       filename = output_filename
-      abort 'No RDF data to write!' if @table.try(:to_rdf).blank?
-      graph = @table.to_rdf
+      abort 'No RDF data to write!' if @mapping.try(:graph).blank?
+      graph = @mapping.graph
       puts "Writing #{graph.count} RDF statements to #{filename} ... "
       # TODO: base_uri: ... for writer constructor
       RDF::Writer.open(filename) do |writer|

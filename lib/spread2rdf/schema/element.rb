@@ -1,7 +1,10 @@
+require 'forwardable'
+
 module Spread2RDF
-  class Spreadsheet
+  module Schema
     class Element
       include Attributes
+      extend Forwardable
 
       self.attributes = {
           name:         nil,
@@ -11,15 +14,12 @@ module Spread2RDF
       attr_reader :parent
       attr_reader :block
 
+      def_delegators :parent, :spreadsheet
 
-      def initialize(parent, attr={}, &block)
+      def initialize(parent, attr = {}, &block)
         @parent   = parent
         @block    = block
         init_attributes(attr)
-      end
-
-      def init
-
       end
 
       def name
@@ -30,21 +30,17 @@ module Spread2RDF
         (@source_name or @name).try(:to_s)
       end
 
-      def spreadsheet
-        parent.spreadsheet
+      def worksheet
+        return self if self.is_a? Worksheet
+        parent = self.parent
+        parent = parent.parent until parent.is_a? Worksheet or parent.nil?
+        parent
       end
 
       def to_s
         name = (self.name.to_s == self.source_name.to_s ?
             self.name : "#{self.name} (#{self.source_name})" )
-        "#{self.class.name.split('::').last} #{name}"
-      end
-
-    private
-
-      def create_context(parent_context, attr)
-        context_class = self.class.const_get(:MappingContext)
-        context_class.new(self, parent_context, attr)
+        "#{self.class.name.split('::').last}-schema #{name}"
       end
 
     end
