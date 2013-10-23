@@ -1,5 +1,9 @@
 module Spread2RDF
   module Namespace
+    DEFAULTS = {
+        UNIT: ::RDF::Vocabulary.new('http://qudt.org/vocab/unit#')
+    }
+
     class << self
       def [](name)
         name = name.to_sym
@@ -18,7 +22,7 @@ module Spread2RDF
       end
 
       def namespace
-        @namespace ||= {}
+        @namespace ||= DEFAULTS
       end
 
       def namespaces
@@ -32,7 +36,7 @@ module Spread2RDF
           when RDF::Vocabulary, RDF::URI, String
             namespace_descriptor.to_s
           else
-            raise "invalid namespace: #{namespace_descriptor.inspect}"
+            raise "invalid namespace: #{namespace_descriptor.inspect}:#{namespace_descriptor.class}"
         end
       end
 

@@ -7,6 +7,7 @@ module Spread2RDF
           @schema = schema
           @filename = filename
           @templates = {}
+          @cell_mappings = {}
         end
 
         def namespaces(namespaces)
@@ -24,6 +25,11 @@ module Spread2RDF
         def template(name, &block)
           raise "required block for template #{name} missing" unless block_given?
           @templates[name.to_sym] = block
+        end
+
+        def cell_mapping(name, &block)
+          raise "required block for cell_mapping #{name} missing" unless block_given?
+          @cell_mappings[name.to_sym] = block
         end
 
         def method_missing(name, *args)

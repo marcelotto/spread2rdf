@@ -38,7 +38,7 @@ module Spread2RDF
           when :to_string     then value
           when :resource_ref  then resolve_resource_ref
           when :new_resource  then create_resource_object
-          when :custom        # TODO execute a mapping block in the context of Column::MappingContext
+          when :custom        then  exec(&schema.cell_mapping)
           else raise 'internal error: unknown column mapping type'
         end
       end

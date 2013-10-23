@@ -13,7 +13,6 @@ require 'linkeddata'
 
 require 'spread2rdf/attributes'
 require 'spread2rdf/version'
-require 'spread2rdf/helper'
 require 'spread2rdf/coord'
 require 'spread2rdf/namespace'
 require 'spread2rdf/roo_helper'
@@ -39,6 +38,8 @@ require 'spread2rdf/mapping/resource'
 require 'spread2rdf/mapping/column'
 require 'spread2rdf/mapping/cell'
 
+require 'spread2rdf/mapping/default_cell_mappings'
+
 
 require 'spread2rdf/cli'
 
@@ -46,5 +47,9 @@ module Spread2RDF
   class << self
     attr_accessor :debug_mode
   end
+
+  ROOT = File.expand_path('../../', __FILE__)
+  ONTOLOGY_DIR = File.join(ROOT, 'ontologies')
+
 end
 

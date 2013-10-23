@@ -28,6 +28,10 @@ module Spread2RDF
         end
       end
 
+      def cell_mapping
+        object if object.is_a?(Proc)
+      end
+
     end
   end
 end

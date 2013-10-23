@@ -38,10 +38,15 @@ module Spread2RDF
         end
         private :__template__
 
-        def method_missing(name, *args)
-          __template__(name) or super
+        def __cell_mapping__(name)
+          @spreadsheet_dsl.instance_variable_get(:@cell_mappings)[name] or
+              Mapping::Cell::Default.method(name).to_proc
         end
+        private :__cell_mapping__
 
+        def method_missing(name, *args)
+          __template__(name) or __cell_mapping__(name) or super
+        end
 
       end
     end

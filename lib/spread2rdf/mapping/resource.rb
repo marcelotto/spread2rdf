@@ -46,7 +46,7 @@ module Spread2RDF
 
       def subject_resource_from_column
         namespace = schema.subject_namespace
-        subject_suffix = Helper.resource_name(subject_name_suffix)
+        subject_suffix = Mapping::Cell::Default.uri_normalization(subject_name_suffix)
         #puts "subject resource for #{sheet} in #{range}: " + RDF::URI.new("#{namespace}#{subject_suffix}" )
         RDF::URI.new("#{namespace}#{subject_suffix}")
       end
