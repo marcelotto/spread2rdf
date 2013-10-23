@@ -24,6 +24,7 @@ module Spread2RDF
         DSL.new(self, input_file).instance_exec(&@schema_spec)
         worksheets.each { |worksheet| worksheet.init }
         mapping.map
+        mapping
       end
 
     end

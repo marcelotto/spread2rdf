@@ -8,6 +8,11 @@ module Spread2RDF
       def definitions
         @@definitions ||= []
       end
+
+      def execute(options = {})
+        CLI.run options.merge(schema: definitions.first) unless CLI.running?
+      end
+
     end
 
   end

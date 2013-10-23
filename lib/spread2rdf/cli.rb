@@ -1,20 +1,20 @@
 # coding: utf-8
+require 'singleton'
 
 module Spread2RDF
   class Cli
-    def initialize
-      parse_command_line!
-    end
+    include Singleton
 
-    def run(schema_spec_file = nil)
-      schema_spec_file ||= @options[:schema_spec_file]
-      abort "No schema specification file given" if schema_spec_file.nil?
-      abort "Couldn't find schema specification file #{schema_spec_file}" unless
-          File.exist?(schema_spec_file)
-      load schema_spec_file
-      abort "No schema specification found" if Schema.definitions.empty?
+    attr_accessor :mapping_schema
+    
+    def run(options = {})
+      @running = true
+      @options = options
+      @input_file = @options.delete(:input_file) if @options[:input_file]
+      self.mapping_schema = @options.delete(:schema) if @options[:schema]
+      parse_command_line!
       puts "Reading #{@input_file} ..."
-      @mapping = Schema.definitions.first.map(@input_file)
+      @mapping = mapping_schema.map(@input_file)
       write_output
       self
     rescue => e
@@ -25,13 +25,36 @@ module Spread2RDF
       end
     end
 
+    def running?
+      @running
+    end
+
+    def mapping_schema=(schema)
+      @mapping_schema =
+        case schema
+          when nil then nil
+          when Schema::Spreadsheet then schema
+          when String
+            abort "no schema specification file given" if schema.nil?
+            abort "couldn't find schema specification file #{schema}" unless
+                File.exist?(schema)
+            load schema
+            abort "no schema specification found" if Schema.definitions.empty?
+            Schema.definitions.first
+          else raise ArgumentError
+        end
+    end
+
   private
 
     # Parse command line options
-    def parse_command_line!(options={})
-      @options = options
+    def parse_command_line!
       optparse = OptionParser.new do |opts|
-        opts.banner = 'Usage: spread2rdf [options] -s SPEC_FILE SPREAD_SHEET_FILE'
+        if mapping_schema
+          opts.banner = "Usage: #{File.basename($PROGRAM_NAME)} [options] SPREAD_SHEET_FILE"
+        else
+          opts.banner = 'Usage: spread2rdf [options] -s SPEC_FILE SPREAD_SHEET_FILE'
+        end
 
         opts.on( '-h', '--help', 'Display this information' ) do
           puts opts
@@ -43,23 +66,22 @@ module Spread2RDF
           exit
         end
 
-        @options[:output_dir] = '.'
-        opts.on( '-o', '--output DIR', 'Output directory (default: current directory)' ) do |dir|
+        @options[:output_dir] ||= '.'
+        opts.on( '-o', '--output DIR', "Output directory (default: #{@options[:output_dir]})" ) do |dir|
           abort "Output directory #{dir} doesn't exist" unless Dir.exist?(dir)
           @options[:output_dir] = dir
         end
 
-        @options[:output_format] = 'ttl'
+        @options[:output_format] ||= 'ttl'
         opts.on( '-f', '--output-format FORMAT', 'Serialization format for the RDF data',
-          "FORMAT being one of: nt, n3, ttl, rdf, xml, html, json (default: ttl)") do |format|
+          "FORMAT being one of: nt, n3, ttl, rdf, xml, html, json (default: #{@options[:output_format]})") do |format|
           #format = 'turtle' if format == 'ttl'
           @options[:output_format] = format.strip.downcase
         end
 
-        @options[:schema_spec_file] = nil
         opts.on( '-s', '--schema SPEC_FILE', 'Schema specification file (required)' ) do |file|
-          @options[:schema_spec_file] = file
-        end
+          self.mapping_schema = file
+        end unless mapping_schema
 
         opts.on( '-d', '--debug', 'Run in debug mode' ) do
           Spread2RDF.debug_mode = true
@@ -69,7 +91,7 @@ module Spread2RDF
 
       optparse.parse!
       raise OptionParser::ParseError, 'required file arguments missing' if ARGV.empty?
-      raise OptionParser::ParseError, 'required schema specification file missing' if @options[:schema_spec_file].nil?
+      raise OptionParser::ParseError, 'required schema specification file missing' if mapping_schema.nil?
 
       @input_file = ARGV.first
     rescue OptionParser::ParseError => e
@@ -102,4 +124,6 @@ module Spread2RDF
     end
     self
   end
+
+  CLI = Cli.instance
 end
