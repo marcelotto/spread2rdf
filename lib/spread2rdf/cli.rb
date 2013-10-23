@@ -9,13 +9,12 @@ module Spread2RDF
     
     def run(options = {})
       @running = true
-      @options = options
-      @input_file = @options.delete(:input_file) if @options[:input_file]
-      self.mapping_schema = @options.delete(:schema) if @options[:schema]
+      init(options)
       parse_command_line!
-      puts "Reading #{@input_file} ..."
-      @mapping = mapping_schema.map(@input_file)
-      write_output
+      case
+        when compile? then compile(@mapping_schema)
+        else convert
+      end
       self
     rescue => e
       if Spread2RDF.debug_mode
@@ -25,8 +24,19 @@ module Spread2RDF
       end
     end
 
+    def init(options)
+      @options = options
+      @input_file = @options.delete(:input_file) if @options[:input_file]
+      self.mapping_schema = @options.delete(:schema) if @options[:schema]
+    end
+    private :init
+
     def running?
       @running
+    end
+
+    def compile?
+      !!@options[:compile]
     end
 
     def mapping_schema=(schema)
@@ -47,7 +57,6 @@ module Spread2RDF
 
   private
 
-    # Parse command line options
     def parse_command_line!
       optparse = OptionParser.new do |opts|
         if mapping_schema
@@ -66,34 +75,45 @@ module Spread2RDF
           exit
         end
 
+        if not mapping_schema
+          opts.on( '-c', '--compile', 'Compile the schema specification to an executable' ) do
+            @options[:compile] = true
+          end
+
+          opts.on( '-s', '--schema SPEC_FILE', 'Schema specification file (required)' ) do |file|
+            if @options[:compile]
+              @mapping_schema = file
+            else
+              self.mapping_schema = file
+            end
+          end
+        end
+
         @options[:output_dir] ||= '.'
         opts.on( '-o', '--output DIR', "Output directory (default: #{@options[:output_dir]})" ) do |dir|
-          abort "Output directory #{dir} doesn't exist" unless Dir.exist?(dir)
+          abort "Output directory #{dir} doesn't exist" unless compile? or Dir.exist?(dir)
           @options[:output_dir] = dir
         end
 
         @options[:output_format] ||= 'ttl'
         opts.on( '-f', '--output-format FORMAT', 'Serialization format for the RDF data',
           "FORMAT being one of: nt, n3, ttl, rdf, xml, html, json (default: #{@options[:output_format]})") do |format|
-          #format = 'turtle' if format == 'ttl'
           @options[:output_format] = format.strip.downcase
         end
-
-        opts.on( '-s', '--schema SPEC_FILE', 'Schema specification file (required)' ) do |file|
-          self.mapping_schema = file
-        end unless mapping_schema
 
         opts.on( '-d', '--debug', 'Run in debug mode' ) do
           Spread2RDF.debug_mode = true
         end
 
       end
-
       optparse.parse!
-      raise OptionParser::ParseError, 'required file arguments missing' if ARGV.empty?
-      raise OptionParser::ParseError, 'required schema specification file missing' if mapping_schema.nil?
-
-      @input_file = ARGV.first
+      if compile?
+        @mapping_schema ||= ARGV.first or raise OptionParser::ParseError, 'required schema specification file missing'
+      else
+        raise OptionParser::ParseError, 'required schema specification file missing' if @mapping_schema.nil?
+        @input_file = ARGV.first or @input_file or
+            raise OptionParser::ParseError, 'required file arguments missing'
+      end
     rescue OptionParser::ParseError => e
       puts e.message
       puts optparse.help
@@ -121,7 +141,43 @@ module Spread2RDF
         end
         graph.each_statement { |statement| writer << statement }
       end
+
     end
+
+    def convert
+      puts "Reading #{@input_file} ..."
+      @mapping = mapping_schema.map(@input_file)
+      write_output
+    end
+
+    def compile(mapping_file)
+      output = if File.directory?(@options[:output_dir])
+        output_dir = @options[:output_dir]
+        output_file = File.basename(mapping_file, File.extname(mapping_file)) + '.exe'
+        File.join(output_dir, output_file)
+      else
+        @options[:output_dir] += '.exe' unless File.extname(@options[:output_dir]) == '.exe'
+        @options[:output_dir]
+      end
+      ocra_options = [
+        '--gem-full',
+        '--add-all-core',
+        '--no-autoload',
+        '--no-dep-run',
+        '--no-enc',
+        '--console'
+      ]
+      #ocra_options << '--quiet' unless Spread2RDF.debug_mode
+      ocra_options << '--debug' if Spread2RDF.debug_mode
+      ocra_gemfile = File.join(Spread2RDF::ROOT, 'Gemfile.ocra')
+      ocra_options << "--gemfile #{ocra_gemfile}"
+      ocra_options << "--output #{output}"
+      ocra_cmd = "ocra #{ocra_options.join(' ')} #{mapping_file}"
+      puts "compiling #{mapping_file} to #{output}"
+      #puts ocra_cmd
+      Kernel.system(ocra_cmd)
+    end
+
     self
   end
 

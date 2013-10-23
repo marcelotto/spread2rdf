@@ -28,6 +28,8 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency('linkeddata', '~> 1.0.0')
 
+  gem.add_dependency('ocra', '~> 1.3.1')
+
   gem.add_development_dependency('rake')
   gem.add_development_dependency('pry', '~> 0.9.12.2')
   gem.add_development_dependency('pry-nav', '~> 0.2.3')
