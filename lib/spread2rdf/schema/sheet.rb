@@ -3,8 +3,8 @@ module Spread2RDF
     class Sheet < Element
 
       self.attributes = {
-          subject:                nil,
           start:                  :A2,
+          subject:                nil,
           row_count_per_resource: nil
       }
 

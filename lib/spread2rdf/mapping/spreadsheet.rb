@@ -12,7 +12,9 @@ module Spread2RDF
       end
 
       def map
-        schema.worksheets.each { |worksheet_schema| worksheet!(worksheet_schema) }
+        schema.sorted_worksheets.each do |worksheet_schema|
+          worksheet!(worksheet_schema)
+        end
         self
       end
 

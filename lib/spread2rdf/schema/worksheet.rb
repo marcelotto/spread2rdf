@@ -21,6 +21,27 @@ module Spread2RDF
         end
       end
 
+      def dependent_sheets
+        references = []
+        each_column do |column|
+          if column.object_mapping_mode == :resource_ref
+            references << spreadsheet.worksheet[column.object[:from]]
+          end
+        end
+        references
+      end
+
+      def depends_on?(worksheet)
+        return false unless worksheet.is_a? Worksheet
+        return false if worksheet == self
+        dependent_sheets = self.dependent_sheets
+        return false if dependent_sheets.empty?
+        return true if dependent_sheets.include? worksheet
+        dependent_sheets.any? do |dependent_sheet|
+          dependent_sheet != self and dependent_sheet.depends_on? worksheet
+        end
+      end
+
     end
   end
 end

@@ -19,6 +19,23 @@ module Spread2RDF
         @worksheet.values
       end
 
+      def sorted_worksheets
+        unsorted_worksheets, sorted_worksheets = worksheets, []
+        unsorted_worksheets.reject! do |worksheet|
+          worksheet.columns.empty? and sorted_worksheets << worksheet
+        end
+        while not unsorted_worksheets.empty?
+          independent = unsorted_worksheets.find_index { |worksheet|
+            unsorted_worksheets.none? do |other_worksheet|
+              worksheet.depends_on? other_worksheet
+            end
+          }
+          raise "schema contains cyclic dependencies" if independent.nil?
+          sorted_worksheets << unsorted_worksheets.delete_at(independent)
+        end
+        sorted_worksheets
+      end
+
       def map(input_file)
         mapping = Mapping::Spreadsheet.new(self, input_file)
         DSL.new(self, input_file).instance_exec(&@schema_spec)
