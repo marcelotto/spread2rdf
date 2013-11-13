@@ -9,7 +9,7 @@ module Spread2RDF
               super(args[:column], args[:row])
             when Symbol, String
               coord = args.to_s
-              raise "Invalid cell coordinates #{coord}" unless coord =~ /(\w+)(\d+)/
+              raise "Invalid cell coordinates #{coord}" unless coord =~ /([A-Za-z]+)(\d+)/
               super(Regexp.last_match[1], Regexp.last_match[2].to_i)
             else raise ArgumentError, "can't handle argument #{args}"
           end
