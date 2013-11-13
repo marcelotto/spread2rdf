@@ -13,6 +13,7 @@ module Spread2RDF
 
       def map
         schema.sorted_worksheets.each do |worksheet_schema|
+          next unless ROO.roo.sheets.include? worksheet_schema.source_name
           worksheet!(worksheet_schema)
         end
         self
