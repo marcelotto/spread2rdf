@@ -1,7 +1,8 @@
 # Spread2RDF
 
-Spread2RDF is a converter for complex spreadsheets to RDF and a DSL for
-specifying the mapping rules for this conversion.
+Spread2RDF is a converter for complex spreadsheets to RDF and a Ruby-internal
+[DSL](http://en.wikipedia.org/wiki/Domain-specific_language)
+for specifying the mapping rules for this conversion.
 
 ## Features
 
@@ -12,6 +13,8 @@ specifying the mapping rules for this conversion.
   [raise an issue](https://github.com/marcelotto/spread2rdf/issues).)
 * Supports many RDF serialization formats for the output, thanks to
   [RDF.rb](https://github.com/ruby-rdf/rdf).
+* Mapping definitions are compilable to executables, which can be run without
+  Ruby installed.
 
 ## Installation
 
@@ -20,25 +23,6 @@ in a terminal:
 
     $ gem install spread2rdf
 
-## Command-line interface
-
-For a description of all available parameters, type the following in a terminal:
-
-    $ spread2rdf --help
-
-## Mapping DSL
-
-Description is following soon.
-
-## Contributing
-
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Added some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
-
-
-## Authors
+## Author
 
 * Marcel Otto
