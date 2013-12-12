@@ -16,6 +16,7 @@ require 'spread2rdf/version'
 require 'spread2rdf/coord'
 require 'spread2rdf/namespace'
 require 'spread2rdf/roo_helper'
+require 'spread2rdf/extensions/file'
 
 require 'spread2rdf/schema/schema'
 require 'spread2rdf/schema/statement_mapping_schema'
@@ -40,7 +41,6 @@ require 'spread2rdf/mapping/cell'
 
 require 'spread2rdf/mapping/default_cell_mappings'
 
-
 require 'spread2rdf/cli'
 
 module Spread2RDF
@@ -50,6 +50,9 @@ module Spread2RDF
 
   ROOT = File.expand_path('../../', __FILE__)
   ONTOLOGY_DIR = File.join(ROOT, 'ontologies')
+
+  SEARCH_PATH = []
+  #SEARCH_PATH << ONTOLOGY_DIR
 
 end
 

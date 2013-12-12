@@ -17,9 +17,14 @@ module Spread2RDF
         defaults.each { |attribute, default_value| attr_accessor attribute }
         @attributes = @attributes.try(:merge, defaults) || defaults
       end
+
+      def normalize_attributes(values)
+        values
+      end
     end
 
     def init_attributes(initial_values)
+      initial_values = self.class.normalize_attributes(initial_values)
       self.class.attributes.each do |attribute, default_value|
         instance_variable_set("@#{attribute}".to_sym,
           initial_values.delete(attribute) || default_value)
@@ -28,6 +33,7 @@ module Spread2RDF
     end
 
     def update_attributes(update_values)
+      update_values = self.class.normalize_attributes(update_values)
       update_values.each do |attribute, value|
         next unless self.class.attributes.include? attribute
         instance_variable_set("@#{attribute}".to_sym, value)

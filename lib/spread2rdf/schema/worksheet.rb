@@ -25,7 +25,8 @@ module Spread2RDF
         references = []
         each_column do |column|
           if column.object_mapping_mode == :resource_ref
-            references << spreadsheet.worksheet[column.object[:from]]
+            references << spreadsheet.worksheet[
+                column.object[:from].try(:fetch, :worksheet)]
           end
         end
         references

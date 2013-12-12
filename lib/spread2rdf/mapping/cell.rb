@@ -46,18 +46,45 @@ module Spread2RDF
 
       def resolve_resource_ref
         source = schema.object[:from]
-        source = { worksheet: source } if source.is_a? Symbol
-        raise ArgumentError, "expecting a Hash as source, but got #{source}" unless source.is_a? Hash
-        source_worksheet = source[:worksheet]
-        source_worksheet = spreadsheet.worksheet(source_worksheet)
-        raise "#{self}: couldn't find source worksheet #{source[:worksheet]}" if source_worksheet.nil?
-        source_predicate = source[:predicate] || RDF::RDFS.label
-        result = source_worksheet.graph.query([nil, source_predicate, value])
-        raise "#{self}: couldn't find a resource for #{value} in #{source_worksheet}" if result.empty?
-        raise "#{self}: found multiple resources for #{value} in #{source_worksheet}: #{result.map(&:subject)}" if result.count > 1
-        result.first.subject
+        if source[:worksheet] && result = resolve_resource_ref_from_worksheet(source[:worksheet])
+          return result
+        elsif source[:data_source] && result = resolve_resource_ref_from_data_sources(source[:data_source])
+          return result
+        else
+          raise "#{self}: couldn't find a resource for #{value} in any of the defined sources"
+        end
       end
       private :resolve_resource_ref
+
+      def resolve_resource_ref_from_worksheet(worksheet)
+        worksheet = spreadsheet.worksheet(worksheet)
+        raise "#{self}: couldn't find source worksheet #{source[:worksheet]}" if worksheet.nil?
+        source_predicate = RDF::RDFS.label # TODO: make this configurable via a attribute in the schema definition
+        result = worksheet.graph.query([nil, source_predicate, value])
+        return nil if result.empty?
+        raise "#{self}: found multiple resources for #{value} in #{worksheet}: #{result.map(&:subject)}" if result.count > 1
+        result.first.subject
+      end
+      private :resolve_resource_ref_from_worksheet
+
+      def resolve_resource_ref_from_data_sources(data_sources)
+        raise ArgumentError, "expecting an Array, but got #{data_sources}" unless data_sources.is_a? Array
+        data_sources.each do |data_source|
+          result = resolve_resource_ref_from_data_source(data_source)
+          return result if result
+        end
+        nil
+      end
+      private :resolve_resource_ref_from_data_sources
+
+      def resolve_resource_ref_from_data_source(data_source)
+        source_predicate = RDF::RDFS.label # TODO: make this configurable via a attribute in the schema definition
+        result = data_source.query([nil, source_predicate, value])
+        return nil if result.empty?
+        raise "#{self}: found multiple resources for #{value} in data sources: #{result.map(&:subject)}" if result.count > 1
+        result.first.subject
+      end
+      private :resolve_resource_ref_from_data_source
 
       def create_resource_object
         case

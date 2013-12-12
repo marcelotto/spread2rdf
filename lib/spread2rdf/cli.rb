@@ -101,6 +101,11 @@ module Spread2RDF
           @options[:output_format] = format.strip.downcase
         end
 
+        opts.on( '-I', '--include DIR', "Add DIR to the search path for external data" ) do |dir|
+          raise "Directory #{dir} doesn't exist" unless File.directory?(dir)
+          Spread2RDF::SEARCH_PATH.unshift dir
+        end
+
         opts.on( '-d', '--debug', 'Run in debug mode' ) do
           Spread2RDF.debug_mode = true
         end
@@ -112,7 +117,8 @@ module Spread2RDF
       else
         raise OptionParser::ParseError, 'required schema specification file missing' if @mapping_schema.nil?
         @input_file = ARGV.first or @input_file or
-            raise OptionParser::ParseError, 'required file arguments missing'
+            raise OptionParser::ParseError, 'required input file missing'
+        SEARCH_PATH << File.expand_path(File.dirname(@input_file))
       end
     rescue OptionParser::ParseError => e
       puts e.message
