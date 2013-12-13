@@ -3,4 +3,4 @@
 
 source 'https://rubygems.org'
 
-gem 'spread2rdf', '~> 0.0.1'
+gem 'spread2rdf'
