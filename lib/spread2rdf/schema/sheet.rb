@@ -65,6 +65,8 @@ module Spread2RDF
         case
           when ( subject.try(:fetch, :uri, nil) || subject ) == :bnode
             :bnode
+          when !( subject.try(:fetch, :uri, nil).try(:fetch, :namespace, nil) ).nil?
+            :from_column_with_suffix
           else
             :from_column
         end
