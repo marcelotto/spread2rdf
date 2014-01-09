@@ -53,10 +53,11 @@ module Spread2RDF
 
       def object_mapping_mode
         case
-          when object.nil?         then :to_string
-          when object.is_a?(Proc)  then :custom
-          when !object[:uri].nil?  then :new_resource
-          when !object[:from].nil? then :resource_ref
+          when object.nil?              then :to_string
+          when object.is_a?(Proc)       then :custom
+          when !object[:uri].nil?       then :new_resource
+          when !object[:from].nil?      then :resource_ref
+          when !object[:language].nil?  then :to_string
           else
             raise "mapping specification error: don't know how to map #{self}"
         end

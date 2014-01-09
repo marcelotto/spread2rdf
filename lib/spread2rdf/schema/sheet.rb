@@ -53,8 +53,10 @@ module Spread2RDF
       end
 
       def subject_column
-        column_name =  self.subject.try(:fetch, :uri, nil).try(:fetch, :column, nil) ||
-            self.subject.try(:fetch, :column, nil) || :uri
+        column_name =
+            ((subject = self.subject) &&
+                ( ( subject[:uri].is_a?(Hash) && subject[:uri][:column] ) ||
+              subject[:column])) || :uri
         @column[column_name]
       end
 

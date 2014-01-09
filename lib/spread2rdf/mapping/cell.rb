@@ -35,14 +35,23 @@ module Spread2RDF
 
       def map_to_object(value)
         case schema.object_mapping_mode
-          when :to_string     then value
+          when :to_string     then map_to_literal(value)
           when :resource_ref  then resolve_resource_ref
           when :new_resource  then create_resource_object
-          when :custom        then  exec(&schema.cell_mapping)
+          when :custom        then exec(&schema.cell_mapping)
           else raise 'internal error: unknown column mapping type'
         end
       end
       private :map_to_object
+
+      def map_to_literal(value)
+        if language = schema.try(:object).try(:fetch, :language, nil)
+          RDF::Literal.new(value, language: language.to_sym)
+        else
+          value
+        end
+      end
+      private :map_to_literal
 
       def resolve_resource_ref
         source = schema.object[:from]
@@ -56,14 +65,11 @@ module Spread2RDF
       end
       private :resolve_resource_ref
 
-      def resolve_resource_ref_from_worksheet(worksheet)
-        worksheet = spreadsheet.worksheet(worksheet)
-        raise "#{self}: couldn't find source worksheet #{source[:worksheet]}" if worksheet.nil?
+      def resolve_resource_ref_from_worksheet(worksheet_name)
+        worksheet = spreadsheet.worksheet(worksheet_name)
+        raise "#{self}: couldn't find source worksheet #{worksheet_name}" if worksheet.nil?
         source_predicate = RDF::RDFS.label # TODO: make this configurable via a attribute in the schema definition
-        result = worksheet.graph.query([nil, source_predicate, value])
-        return nil if result.empty?
-        raise "#{self}: found multiple resources for #{value} in #{worksheet}: #{result.map(&:subject)}" if result.count > 1
-        result.first.subject
+        query_subject(worksheet.graph, source_predicate, value, worksheet)
       end
       private :resolve_resource_ref_from_worksheet
 
@@ -79,12 +85,17 @@ module Spread2RDF
 
       def resolve_resource_ref_from_data_source(data_source)
         source_predicate = RDF::RDFS.label # TODO: make this configurable via a attribute in the schema definition
-        result = data_source.query([nil, source_predicate, value])
-        return nil if result.empty?
-        raise "#{self}: found multiple resources for #{value} in data sources: #{result.map(&:subject)}" if result.count > 1
-        result.first.subject
+        query_subject(data_source, source_predicate, value)
       end
       private :resolve_resource_ref_from_data_source
+
+      def query_subject(data_source, predicate, value, data_source_name = nil)
+        data_source_name ||= "data source #{data_source}"
+        result = data_source.query([nil, predicate, map_to_literal(value)])
+        return nil if result.empty?
+        raise "#{self}: found multiple resources for #{value} in #{data_source_name}: #{result.map(&:subject)}" if result.count > 1
+        result.first.subject
+      end
 
       def create_resource_object
         case
