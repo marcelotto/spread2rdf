@@ -5,7 +5,7 @@ module Spread2RDF
       self.attributes = {
           start:                  :A2,
           subject:                nil,
-          row_count_per_resource: nil
+          row_count_per_resource: nil  # TODO: document this in the README
       }
 
       def initialize(parent, attr = {}, &block)
@@ -53,7 +53,8 @@ module Spread2RDF
       end
 
       def subject_column
-        column_name = self.subject.try(:fetch, :column, nil) || :uri
+        column_name =  self.subject.try(:fetch, :uri, nil).try(:fetch, :column, nil) ||
+            self.subject.try(:fetch, :column, nil) || :uri
         @column[column_name]
       end
 
