@@ -16,8 +16,10 @@ module Spread2RDF
 
         def self.uri_normalization(string)
           string
+            .gsub(' - ', '-')
+            .gsub('- ', '-')
             .gsub(', ', '-')
-            .gsub(' ', '-')
+            .gsub(' ', '_')
         end
 
       end
