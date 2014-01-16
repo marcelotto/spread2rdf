@@ -31,7 +31,7 @@ module Spread2RDF
       end
 
       def self.resolve_data_sources(data_sources)
-        return [data_sources] unless data_sources.is_a? Array
+        data_sources = [data_sources] unless data_sources.is_a? Array
         data_sources.map do |data_source|
           case
             when (uri = data_source).is_a?(RDF::URI) || (uri = RDF::URI.new(data_source)).valid?
