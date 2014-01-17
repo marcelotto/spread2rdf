@@ -24,29 +24,11 @@ module Spread2RDF
       ##########################################################################
       # subject mapping
 
+      include ResourceCreation
+
       def subject
-        @subject ||=
-            case schema.subject_mapping_mode
-              when :bnode                   then RDF::Node.new
-              when :from_column_with_suffix then subject_resource_from_column_with_suffix
-              when :from_column             then subject_resource_from_column
-              else raise 'unknown subject mapping type'
-            end
+        @subject ||= create_resource
       end
-      alias subject_resource subject
-
-      def subject_resource_from_column
-        RDF::URI.new(subject_value, validate: true)
-      end
-      private :subject_resource_from_column
-
-      def subject_resource_from_column_with_suffix
-        namespace = schema.subject_namespace
-        subject_suffix = Mapping::Cell::Default.uri_normalization(subject_value)
-        #puts "subject resource for #{sheet} in #{range}: " + RDF::URI.new("#{namespace}#{subject_suffix}" )
-        RDF::URI.new("#{namespace}#{subject_suffix}")
-      end
-      private :subject_resource_from_column_with_suffix
 
       def subject_value
         cells = row_range.map do |row|
@@ -56,6 +38,7 @@ module Spread2RDF
         raise "multiple subjects found for Resource in #{row_range} of #{sheet}: #{cells.inspect}" if cells.count > 1
         cells.first
       end
+      alias resource_creation_value subject_value
       private :subject_value
 
       def subject_description

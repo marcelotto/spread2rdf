@@ -1,6 +1,7 @@
 module Spread2RDF
   module Mapping
     class Cell < Element
+      include ResourceCreation
 
       attr_reader :row
 
@@ -24,6 +25,7 @@ module Spread2RDF
       def value
         @value ||= worksheet.cell_value(coord)
       end
+      alias resource_creation_value value
 
       def object
         @object ||= value && map_to_object(value)
@@ -37,9 +39,9 @@ module Spread2RDF
         case schema.object_mapping_mode
           when :to_string     then map_to_literal(value)
           when :resource_ref  then resolve_resource_ref
-          when :new_resource  then create_resource_object
+          when :new_resource  then create_resource
           when :custom        then exec(&schema.cell_mapping)
-          else raise 'internal error: unknown column mapping type'
+          else raise 'internal error: unknown column mapping mode'
         end
       end
       private :map_to_object
@@ -96,16 +98,6 @@ module Spread2RDF
         raise "#{self}: found multiple resources for #{value} in #{data_source_name}: #{result.map(&:subject)}" if result.count > 1
         result.first.subject
       end
-
-      def create_resource_object
-        case
-          when (schema.object.try(:fetch, :uri, nil) || object) == :bnode
-            RDF::Node.new
-          else
-            raise NotImplementedError
-        end
-      end
-      private :create_resource_object
 
       ##########################################################################
       # for the DSL for column statement blocks

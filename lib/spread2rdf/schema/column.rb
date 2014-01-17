@@ -2,6 +2,7 @@ module Spread2RDF
   module Schema
     class Column < Element
       include StatementMapping
+      include ResourceCreation
 
       self.attributes = {
           predicate:  nil,
@@ -61,6 +62,10 @@ module Spread2RDF
           else
             raise "mapping specification error: don't know how to map #{self}"
         end
+      end
+
+      def resource_creation_attributes
+        object
       end
 
       def cell_mapping

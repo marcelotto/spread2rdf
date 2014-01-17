@@ -1,6 +1,7 @@
 module Spread2RDF
   module Schema
     class Sheet < Element
+      include ResourceCreation
 
       self.attributes = {
           start:                  :A2,
@@ -12,6 +13,10 @@ module Spread2RDF
         super
         @column = {}
         @column_index = {}
+      end
+
+      def resource_creation_attributes
+        subject
       end
 
       def start_coord
@@ -62,23 +67,6 @@ module Spread2RDF
 
       def fix_row_count_per_resource
         row_count_per_resource or ( !subject_column && 1 ) or nil
-      end
-
-      def subject_mapping_mode
-        case
-          when ( subject.try(:fetch, :uri, nil) || subject ) == :bnode
-            :bnode
-          when !( subject.try(:fetch, :uri, nil).try(:fetch, :namespace, nil) ).nil?
-            :from_column_with_suffix
-          else
-            :from_column
-        end
-      end
-
-      def subject_namespace
-        subject_namespace_name =
-            subject.try(:fetch, :uri, nil).try(:fetch, :namespace, nil)
-        Namespace.resolve_to_namespace(subject_namespace_name)
       end
 
       def subject_resource_type
