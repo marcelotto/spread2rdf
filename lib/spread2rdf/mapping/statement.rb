@@ -5,8 +5,13 @@ module Spread2RDF
       def statements_to_object(object)
         case schema.statement_mapping_mode
           when :default
-            statement(subject, predicate, object)
+            if schema.inverse_mode
+              statement(object, predicate, subject)
+            else
+              statement(subject, predicate, object)
+            end
           when :restriction
+            raise NotImplementedError if schema.inverse_mode
             restriction_class = RDF::Node.new
             statements(
                 [ subject, RDF::RDFS.subClassOf, restriction_class ],
