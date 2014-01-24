@@ -408,10 +408,10 @@ end
 It's possible to make a schema mapping definition executable as a command-line
 application by placing a ```Schema.execute``` call after the schema definition
 in a mapping file.
-Then the mapping file can be used an executable script file, which behaves like
-```spread2rdf``` with the schema mapping parameter ```-s``` implicitly set to
-this schema mapping, supporting all of its possible parameters  (except ```-s```
-obviously).
+With that, the mapping file can be used as an executable script file, which
+behaves like ```spread2rdf``` with the schema mapping parameter ```-s```
+implicitly set to this schema mapping, supporting all of its possible
+parameters  (except ```-s``` obviously).
 
 Example: A file ```example-mapping.s2r``` with the following definition
 ```ruby
@@ -434,8 +434,8 @@ This call is equivalent to this:
     $ spread2rdf -s example-mapping.s2r example.xls
 
 ### Compilation of mappings
-An executable mapping can also be compiled to an executable with ```-c``` option
-of the ```spread2rdf``` command-line interface like this:
+An executable mapping can also be compiled to a Windows executable with ```-c```
+option of the ```spread2rdf``` command-line interface like this:
 
     $ spread2rdf -c example-mapping.s2r
 
@@ -443,7 +443,7 @@ The resulting executable can then be used like the executable Ruby mapping file,
 but without the need of an installed Ruby, since this is compiled into the
 executable.
 
-    $ example-mapping example.xls
+    $ example-mapping.exe example.xls
 
 ## Contributing
 
