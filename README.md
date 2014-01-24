@@ -179,7 +179,7 @@ worksheet 'Settings' do
 end
 ```
 
-### Worksheets
+### Worksheet schema definitions
 The schema definition block should contain a worksheet definition for
 every worksheet with content to be processed.
 It consists of
@@ -234,7 +234,7 @@ the following criteria:
 - The last row for a subject is the last row with an empty value in the subject
   column or the last row of the worksheet.
 
-#### Columns
+### Column schema definitions
 A column definition consists of
 - the keyword ```column```,
 - followed by a Ruby symbol with the arbitrary name of the column,
@@ -338,7 +338,7 @@ Multiple statements at once can be generated with the ```statements``` method,
 which takes an arbitrary number of array arguments containing the three subject,
 predicate and object elements of a triple.
 
-#### Column blocks
+### Column block definitions
 A column block is used to define a sub sheet of a worksheet, meaning a series of
 columns (or further columns blocks) which are treated like a sheet, i.e.
 introducing subject resources, which are used as the subject of the triples
@@ -353,8 +353,7 @@ A column block definition consists of
 All parameters of worksheets (except ```start```) and columns (the ```object```
 parameter) can be used as parameters of a column block definition.
 
-
-#### Templates
+### Templates
 Templates are a way to associate a name with a Ruby block inside a worksheet,
 for later reuse of definition blocks or mapping blocks.
 A template definition consists of
