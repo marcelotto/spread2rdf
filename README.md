@@ -130,7 +130,7 @@ end
 ```
 
 A complete example mapping file using most of the features can be found
-[in the examples directory](examples/ProSysMod.s2r).
+[in the examples directory](examples/ProSysMod.s2r.rb).
 
 ### Mapping definition file
 
