@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 require 'spread2rdf'
 
 module Spread2RDF
