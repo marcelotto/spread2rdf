@@ -35,6 +35,8 @@ module Spread2RDF
         value.blank?
       end
 
+    private
+
       def map_to_object(value)
         case schema.object_mapping_mode
           when :to_string     then map_to_literal(value)
@@ -44,7 +46,6 @@ module Spread2RDF
           else raise 'internal error: unknown column mapping mode'
         end
       end
-      private :map_to_object
 
       def map_to_literal(value)
         if language = schema.try(:object).try(:fetch, :language, nil)
@@ -53,7 +54,6 @@ module Spread2RDF
           value
         end
       end
-      private :map_to_literal
 
       def resolve_resource_ref
         source = schema.object[:from]
@@ -65,7 +65,6 @@ module Spread2RDF
           raise "#{self}: couldn't find a resource for #{value} in any of the defined sources"
         end
       end
-      private :resolve_resource_ref
 
       def resolve_resource_ref_from_worksheet(worksheet_name)
         worksheet = spreadsheet.worksheet(worksheet_name)
@@ -73,7 +72,6 @@ module Spread2RDF
         source_predicate = RDF::RDFS.label # TODO: make this configurable via a attribute in the schema definition
         query_subject(worksheet.graph, source_predicate, value, worksheet)
       end
-      private :resolve_resource_ref_from_worksheet
 
       def resolve_resource_ref_from_data_sources(data_sources)
         raise ArgumentError, "expecting an Array, but got #{data_sources}" unless data_sources.is_a? Array
@@ -83,13 +81,11 @@ module Spread2RDF
         end
         nil
       end
-      private :resolve_resource_ref_from_data_sources
 
       def resolve_resource_ref_from_data_source(data_source)
         source_predicate = RDF::RDFS.label # TODO: make this configurable via a attribute in the schema definition
         query_subject(data_source, source_predicate, value)
       end
-      private :resolve_resource_ref_from_data_source
 
       def query_subject(data_source, predicate, value, data_source_name = nil)
         data_source_name ||= "data source #{data_source}"
@@ -121,10 +117,11 @@ module Spread2RDF
         #puts "executing block of #{@___column___} in row #{row}"
         self.instance_exec(value, &block) if block_given?
       end
-      private :exec
 
       ##########################################################################
       # Element#_children_
+
+      public
 
       def _children_
         nil
