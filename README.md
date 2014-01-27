@@ -9,31 +9,29 @@ for specifying the mapping rules for this conversion.
 * Supports Excel/Excelx, Google spreadsheets, OpenOffice, LibreOffice and CSV
   spreadsheets as input, thanks to [Roo](https://github.com/Empact/roo).
   (Currently, it's tested for Excel only.
-  If you have a problem with another spreadsheet type,
+  If you have problems with other spreadsheet types,
   [raise an issue](https://github.com/marcelotto/spread2rdf/issues).)
 * Supports many RDF serialization formats for the output, thanks to
   [RDF.rb](https://github.com/ruby-rdf/rdf).
-* Mapping definitions are compilable to executables, which can be run without
-  Ruby installed.
+* Mapping definitions can be compiled to executables, which are runnable without
+  having Ruby installed
 
 ## Installation
 
-Install [Ruby](http://www.ruby-lang.org/) and execute the following command
-in a terminal:
+Install [Ruby](http://www.ruby-lang.org/) and execute:
 
     $ gem install spread2rdf
 
-### Command-line interface
+## Command-line interface
 
-For a description of all available parameters, type the following in a terminal:
+For a full description of available parameters, run:
 
     $ spread2rdf --help
 
 ## How it works
 
-You write a mapping file for an Excel file or a bunch of Excel files with the
-same structure, whose data should be converted to RDF.
-You apply the mapping file to an Excel file using the ```spread2rdf```
+Write a mapping file for the spreadsheet that should be converted to RDF.
+Apply the mapping using the ```spread2rdf```
 command-line interface or a compiled version of the mapping file.
 
 ### Example mapping
@@ -129,7 +127,7 @@ module Spread2RDF
 end
 ```
 
-A complete example mapping file using most of the features can be found
+A complete example file, showcasing most of the features, can be found
 [in the examples directory](examples/ProSysMod.s2r.rb).
 
 ### Mapping definition file
@@ -147,8 +145,8 @@ end
 ```
 
 The name is purely descriptive and currently not used for anything else.
-Into the definition block goes the description of the schema of a spreadsheet
-and the conversion rules for mapping its cells to RDF.
+The definition block contains the description of your spreadsheets schema and
+the conversion rules for mapping the cells to RDF.
 
 ### URIs and namespaces
 
@@ -156,9 +154,9 @@ URIs can be written in the form ```Namespace.suffix```, where the namespace is
 written in uppercase.
 The most common namespaces like ```RDF, RDFS, OWL, SKOS, XSD, DC, FOAF``` (all
 predefined [RDF.rb vocabularies](http://rubydoc.info/github/ruby-rdf/rdf/master/RDF/Vocabulary))
-are available without declaration.
-Additional namespaces can be defined statically using the method ```namespace```
-inside the schema definition block, as in the example above:
+are available without prior declaration.
+Additional namespaces can be defined statically using the ```namespace``` method
+inside the schema definition block:
 ```ruby
 module Spread2RDF
   Schema.definition 'Name-of-the-mapping-schema' do
@@ -168,11 +166,10 @@ module Spread2RDF
     )
   end
 end
-
 ```
-If a namespace should be declared dynamically, for example from to the content
-of a cell of a worksheet, an element can be added to the hash of namespaces
-```NS```, where the namespace name is given as a Ruby symbol:
+If you want to declare a namespace dynamically, from the contents
+of a cell for example, an element can be added to the hash of namespaces
+```NS```. The name is given as a Ruby symbol:
 ```ruby
 worksheet 'Settings' do
   NS[:EX] = cell(:B7)
@@ -180,30 +177,31 @@ end
 ```
 
 ### Worksheet schema definitions
-The schema definition block should contain a worksheet definition for
-every worksheet with content to be processed.
+The schema definition block should contain a worksheet definition for every
+worksheet to be processed.
 It consists of
 - the keyword ```worksheet```,
-- followed by a string with the name of the worksheet used in the spreadsheet,
+- followed by a the name of the worksheet used in the spreadsheet as a string,
 - a list of named parameters (described below),
 - and a block with column or column block definitions or arbitrary cell
-  processing like in the ```Settings``` worksheet above.
-The order of the worksheet definitions is insignificant.
+  processing as in the ```Settings``` worksheet above.
+The order of the worksheet definitions is not significant.
 
 ###### ```name``` parameter
-If you want to refer to a worksheet (e.g. in the ```subject``` parameter) under
-a different name than the one used in the spreadsheet (e.g. because it contains
-whitespaces), you can define it with this parameter.
+If you want to refer to a worksheet (e.g. in the ```subject``` parameter) with
+a different name than the one used in the spreadsheet (because it contains
+whitespaces for example), you can define it with this parameter.
 
 ###### ```start``` parameter
-The upper-left cell of the data to be converted as a Ruby symbol.
+A Ruby symbol pointing to the upper-left cell of the data to be converted.
 Assuming the first row is a header (which is irrelevant for the conversion), the
 default value for this parameter is ```:A2```.
 
 ###### ```subject``` parameter
-This parameter specifies the construction of a subject resource for a row and
-expects a hash with further sub-parameters as its value:
-- ```uri```: Defines the rules to construct an URI for the subject, possible values:
+This parameter specifies the construction of subject resources of rows.
+It expects a hash with further sub-parameters as its value:
+- ```uri```: Defines the rules to construct an URI for the subject.
+  Possible values are:
   - ```:bnode```: Construct a blank node for every subject.
   - Another hash if a full URI should be constructed with the following possible
     parameters:
@@ -211,11 +209,11 @@ expects a hash with further sub-parameters as its value:
       base value for the construction of an URI for a subject.
       In the following I will call this the subject column.
       The default value for this is ```:uri```.
-    - ```namespace```: The namespace used to construct a URI for a subject by
+    - ```namespace```: The namespace used to construct an URI for a subject by
       concatenation with the corresponding value of the subject column.
       If this is not specified, it is assumed that the subject column contains
       absolute URIs.
-- ```type```: The URI of a RDFS class every subject should be an element of,
+- ```type```: The URI of the RDFS class every subject should be an element of,
   i.e. for every subject a ```rdf:type``` statement is produced with this URI as
   its object.
 - ```sub_class_of```: The URI of a RDFS class every subject should be a
@@ -225,8 +223,7 @@ expects a hash with further sub-parameters as its value:
 - ```column```: shortcut for the ```column``` sub-parameter of the ```uri``` parameter
 
 Note, that the rows for a subject might span multiple rows of a worksheet, for
-example when another column contains multiple rows with values for the same
-subject.
+example when a column contains multiple rows with values for the same subject.
 The range of rows for a subject is defined by the subject column according to
 the following criteria:
 - The first row for a subject is the row with a non-empty value in the subject
@@ -240,17 +237,17 @@ A column definition consists of
 - followed by a Ruby symbol with the arbitrary name of the column,
 - an optional list of named parameters (described below),
 - and an optional block with custom logic (described below).
-The order of the column definitions is significant and must correspond to the
-order of columns of the worksheet.
+The order of column definitions is significant and must correspond to the
+order of columns in the worksheet.
 Columns which should be ignored, simply leave the optional parameter and block empty.
 Note, that the first column is defined by the ```start``` parameter of the
 worksheet.
 
 ###### ```predicate``` parameter
-The URI of a RDF property which should be used for construction of triples for
-values this column.
+The URI of the RDF property which should be used for constructing of triples for
+values of this column.
 Leaving this parameter unspecified has the same effect as setting ```statement```
-to ```:none```.
+to ```:none``` (see below).
 
 ###### ```object``` parameter
 This parameter specifies the construction of an object resource or value for a
@@ -262,14 +259,14 @@ row and expects a hash with further sub-parameters as its value:
   Specifies the rule for the generation of a resource for the object
   of a triple. Currently, the following values are possible:
   - ```:bnode```:
-    Generate a blank node, which makes mostly sense in conjunction
-    with the specification of a Ruby block for custom logic (see below), where
-    additional statement about this object are generated.
-  - A Hash with a ```namespace``` key and a namespace as the value, which used
-    to construct an URI by concatenation with the corresponding cell value of
-    the column.
+    Generate a blank node. Primarly used in conjunction with the specification
+    of a Ruby block for custom logic (see below), where additional statements
+    about this object are generated.
+  - A Hash with a ```namespace``` key and a namespace as the value, which is
+    used to construct an URI by concatenating it with the corresponding cell
+    value of the column.
 - ```type```:
-  The URI of a RDFS class every object resource should be an element of, i.e.
+  The URI of the RDFS class every object resource should be an element of, i.e.
   for every object a ```rdf:type``` statement is produced with this URI as its
   object.
 - ```from```:
@@ -298,6 +295,10 @@ used as the object of the corresponding generated triple.
 ###### ```statement``` parameter
 This parameter allows the configuration of the triple generation.
 Currently, there are three possible values:
+- ```:none```:
+  Don't generate a triple.
+  Useful in conjunction with Ruby blocks for custom logic.
+  Leaving the ```predicate``` parameter unspecified has the same effect.
 - ```:inverse```:
   Use the subject resource (from the subject column) as the object and the
   mapped value of a cell as the subject of the generated statement.
@@ -306,9 +307,10 @@ Currently, there are three possible values:
   Instead of generating a triple of the form
   ```subject predicate object .```,
   where ```subject``` is the resource from the subject column,
-  ```predicate``` is the value specified in the ```predicate``` parameter,
-  and ```object``` is the mapped value from column,
-  the following statements are generated
+  ```predicate``` the value specified in the ```predicate``` parameter,
+  and ```object``` the mapped value from the cell of a column,
+  the following statements are generated:
+
 ```
   subject rdfs:subClassOf [
     rdf:type owl:Restriction ;
@@ -316,19 +318,16 @@ Currently, there are three possible values:
     restriction_property object
   ] .
 ```
+
   ```restriction_property``` is ```owl:hasValue``` by default, but can be
   changed by giving a hash as the value of ```statement``` parameter, containing
   ```:restriction``` as a key and the URI of restriction property as its value.
-- ```:none```:
-  Don't generate a triple.
-  Useful in conjunction with Ruby blocks for custom logic.
-  Leaving the ```predicate``` parameter unspecified has the same effect.
 
 ###### Custom logic with Ruby blocks
 The optional Ruby block can be used to generate further statements (or perform
 custom actions in general) to the values of a column.
 This block gets the cell value as an argument, but is executed in the context of
-the [Cell class](lib/spread2rdf/mapping/cell.rb), so the mapped value can
+the [Cell class](lib/spread2rdf/mapping/cell.rb), so the mapped value can be
 accessed via the ```object``` method.
 It's also possible to access the value or mapped value of another column of the
 same row with the methods ```value_of_column``` or ```object_of_column```.
@@ -384,8 +383,8 @@ module Spread2RDF
 end
 ```
 
-Another usage for templates is definition of a sequence of columns in worksheet
-definition, by calling the ```include``` method with template name (in this case
+Another usage for templates is the definition of a sequence of columns in worksheet
+definition, by calling the ```include``` method with the template name (in this case
 as Ruby symbol) inside of a worksheet definition (at the appropriate position).
 
 Example:
@@ -434,8 +433,8 @@ This call is equivalent to this:
     $ spread2rdf -s example-mapping.s2r example.xls
 
 ### Compilation of mappings
-An executable mapping can also be compiled to a Windows executable with ```-c```
-option of the ```spread2rdf``` command-line interface like this:
+An executable mapping can also be compiled to a Windows executable with the
+```-c``` option of the ```spread2rdf``` command-line interface like this:
 
     $ spread2rdf -c example-mapping.s2r
 
