@@ -34,7 +34,7 @@ Write a mapping file for the spreadsheet that should be converted to RDF.
 Apply the mapping using the ```spread2rdf```
 command-line interface or a compiled version of the mapping file.
 
-### Example mapping
+### Example mapping file
 
 ```ruby
 require 'spread2rdf'
@@ -156,7 +156,7 @@ The most common namespaces like ```RDF, RDFS, OWL, SKOS, XSD, DC, FOAF``` (all
 predefined [RDF.rb vocabularies](http://rubydoc.info/github/ruby-rdf/rdf/master/RDF/Vocabulary))
 are available without prior declaration.
 Additional namespaces can be defined statically using the ```namespace``` method
-inside the schema definition block:
+in the schema definition block:
 ```ruby
 module Spread2RDF
   Schema.definition 'Name-of-the-mapping-schema' do
@@ -181,7 +181,7 @@ The schema definition block should contain a worksheet definition for every
 worksheet to be processed.
 It consists of
 - the keyword ```worksheet```,
-- followed by a the name of the worksheet used in the spreadsheet as a string,
+- followed by the name of the worksheet used in the spreadsheet as a string,
 - a list of named parameters (described below),
 - and a block with column or column block definitions or arbitrary cell
   processing as in the ```Settings``` worksheet above.
@@ -198,7 +198,7 @@ Assuming the first row is a header (which is irrelevant for the conversion), the
 default value for this parameter is ```:A2```.
 
 ###### ```subject``` parameter
-This parameter specifies the construction of subject resources of rows.
+This parameter specifies the construction of subject resources from rows.
 It expects a hash with further sub-parameters as its value:
 - ```uri```: Defines the rules to construct an URI for the subject.
   Possible values are:
@@ -222,7 +222,7 @@ It expects a hash with further sub-parameters as its value:
   this URI as its object.
 - ```column```: shortcut for the ```column``` sub-parameter of the ```uri``` parameter
 
-Note, that the rows for a subject might span multiple rows of a worksheet, for
+Note that the rows for a subject might span multiple rows of a worksheet, for
 example when a column contains multiple rows with values for the same subject.
 The range of rows for a subject is defined by the subject column according to
 the following criteria:
@@ -239,7 +239,7 @@ A column definition consists of
 - and an optional block with custom logic (described below).
 The order of column definitions is significant and must correspond to the
 order of columns in the worksheet.
-Columns which should be ignored, simply leave the optional parameter and block empty.
+For columns which should be ignored, the parameters must be omitted.
 Note, that the first column is defined by the ```start``` parameter of the
 worksheet.
 
@@ -259,7 +259,7 @@ row and expects a hash with further sub-parameters as its value:
   Specifies the rule for the generation of a resource for the object
   of a triple. Currently, the following values are possible:
   - ```:bnode```:
-    Generate a blank node. Primarly used in conjunction with the specification
+    Generate a blank node. Primarily used in conjunction with the specification
     of a Ruby block for custom logic (see below), where additional statements
     about this object are generated.
   - A Hash with a ```namespace``` key and a namespace as the value, which is
@@ -294,7 +294,7 @@ used as the object of the corresponding generated triple.
 
 ###### ```statement``` parameter
 This parameter allows the configuration of the triple generation.
-Currently, there are three possible values:
+Currently, the following values are possible:
 - ```:none```:
   Don't generate a triple.
   Useful in conjunction with Ruby blocks for custom logic.
@@ -353,7 +353,7 @@ All parameters of worksheets (except ```start```) and columns (the ```object```
 parameter) can be used as parameters of a column block definition.
 
 ### Templates
-Templates are a way to associate a name with a Ruby block inside a worksheet,
+Templates are a way to associate a name with a Ruby block in a worksheet,
 for later reuse of definition blocks or mapping blocks.
 A template definition consists of
 - the keyword ```template```,
@@ -383,9 +383,9 @@ module Spread2RDF
 end
 ```
 
-Another usage for templates is the definition of a sequence of columns in worksheet
+Another usage for templates is the definition of a sequence of columns in a worksheet
 definition, by calling the ```include``` method with the template name (in this case
-as Ruby symbol) inside of a worksheet definition (at the appropriate position).
+as Ruby symbol) in a worksheet definition (at the appropriate position).
 
 Example:
 ```ruby
@@ -452,6 +452,6 @@ executable.
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
 
-## Authors
+## Author
 
 * Marcel Otto
