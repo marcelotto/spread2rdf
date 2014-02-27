@@ -96,11 +96,11 @@ module Spread2RDF
       column :name, predicate: RDFS.label
       column :uri
 
-      column :type,             predicate: RDF.type,
-                                object:    { from: :MaterialElementClasses }
-      column_block :parameter,  subject: { uri: :bnode, type: PSM.Parameter },
-                   predicate: PSM.materialParameter,
-                   &parameter_block
+      column :modified, predicate: DC.modified,
+                        object:    { datatype: XSD.date }
+
+      column :type, predicate: RDF.type,
+                    object:    { from: :MaterialElementClasses }
 
       column_block :parameter,  subject: { uri: :bnode, type: PSM.Parameter },
                                 predicate: PSM.materialParameter do
@@ -253,8 +253,10 @@ to ```:none``` (see below).
 This parameter specifies the construction of an object resource or value for a
 row and expects a hash with further sub-parameters as its value:
 - ```language```:
-  A string or Ruby symbol with a language to be used to tag the string value of
+  A string or Ruby symbol with a language to be used to tag the object value of
   the generated triple.
+- ```datatype```:
+  An URI to be used as the datatype for the object value of the generated triple.
 - ```uri```:
   Specifies the rule for the generation of a resource for the object
   of a triple. Currently, the following values are possible:

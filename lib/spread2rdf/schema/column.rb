@@ -59,6 +59,7 @@ module Spread2RDF
           when !object[:uri].nil?       then :new_resource
           when !object[:from].nil?      then :resource_ref
           when !object[:language].nil?  then :to_string
+          when !object[:datatype].nil?  then :to_string
           else
             raise "mapping specification error: don't know how to map #{self}"
         end

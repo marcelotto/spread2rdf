@@ -50,6 +50,8 @@ module Spread2RDF
       def map_to_literal(value)
         if language = schema.try(:object).try(:fetch, :language, nil)
           RDF::Literal.new(value, language: language.to_sym)
+        elsif datatype = schema.try(:object).try(:fetch, :datatype, nil)
+          RDF::Literal.new(value, datatype: datatype)
         else
           value
         end
