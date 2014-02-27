@@ -27,7 +27,6 @@ Gem::Specification.new do |gem|
   gem.add_dependency('rubyzip', '~> 1.0.0') # for the roo-xlsm-fix
 
   gem.add_dependency('linkeddata', '~> 1.1.0')
-  gem.add_dependency('equivalent-xml', '~> 0.3.0')
 
   gem.add_dependency('ocra', '~> 1.3.1')
   gem.add_dependency('bundler') # needed for ocra
